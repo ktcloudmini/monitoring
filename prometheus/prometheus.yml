@@ -52,11 +52,13 @@ scrape_configs:
       - region: ap-northeast-2
         port: 8080
     relabel_configs:
-      - source_labels: [__meta_ec2_tag_aws_autoscaling_groupName]
-        regex: monitoring-dev-asg-app.*
-        action: keep
+        - source_labels: [__meta_ec2_tag_aws_autoscaling_groupName]
+          regex: monitoring-dev-asg-app.*
+          action: keep
 
-      - source_labels: [__meta_ec2_private_ip]
-        regex: (.+)
-        replacement: $1:8080
-        target_label: __address__
+
+
+        - source_labels: [__meta_ec2_private_ip]
+          regex: (.+)
+          replacement: $1:8080
+          target_label: __address__
