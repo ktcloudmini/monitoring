@@ -1,4 +1,23 @@
+version: "3.8"
+
 services:
+  app:
+    image: node:18
+    container_name: app
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: node server.js
+
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -15,7 +34,6 @@ services:
   node_exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
-    # host의 /proc, /sys 등을 읽어서 메트릭 생성
     pid: host
     volumes:
       - /:/host:ro,rslave
@@ -29,7 +47,6 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     environment:
-      # 첫 로그인 admin/admin 변경 귀찮으면 여기서 지정 가능(원하면 삭제해도 됨)
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
@@ -45,4 +62,3 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
-
