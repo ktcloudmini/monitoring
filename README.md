@@ -44,7 +44,9 @@ curl -s http://localhost:8080/metrics | grep http_requests_total | head
 
 > 아래 쿼리는 node_exporter 기준이며, 인스턴스 필터는 필요할 때만 추가하세요.
 > 예: `{job="node"}` / `{instance="<PRIVATE_IP>:9100"}` / `{instance_name="<TAG_NAME>"}`
-##
+
+---
+
 ### CPU usage (%)
 ```promql
 100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])))
