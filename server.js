@@ -51,4 +51,14 @@ app.get("/metrics", async (req, res) => {
   res.end(await client.register.metrics());
 });
 
+/** ✅ 5xx 테스트 라우트: listen 위에 두기 */
+app.get("/fail", (req, res) => {
+  res.status(500).send("forced 500");
+});
+
+// 503 강제 발생(가끔 503이 더 보기 좋음)
+app.get("/unavailable", (req, res) => {
+  res.status(503).send("forced 503");
+});
+
 app.listen(PORT, "0.0.0.0", () => console.log(`listening on :${PORT}`));
