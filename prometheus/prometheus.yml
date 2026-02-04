@@ -18,47 +18,45 @@ global:
   scrape_interval: 30s
 
 scrape_configs:
-  - job_name: "prometheus"
+  - job_name: prometheus
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ["prometheus:9090"]
 
-  # (1) node_exporter: 각 EC2의 9100
-  - job_name: "node"
+  # -------------------------
+  # node_exporter (CPU/MEM)
+  # -------------------------
+  - job_name: node
     ec2_sd_configs:
       - region: ap-northeast-2
         port: 9100
+        filters:
+          - name: instance-state-name
+            values: ["running"]
+
     relabel_configs:
-      # ASG로 필터링 (둘 중 하나 방식 선택)
-      - source_labels: [__meta_ec2_tag_aws_autoscaling_groupName]
-        regex: monitoring-dev-asg-app.*
-        action: keep
-
-      # (선택) Name 태그로 필터링
-      # - source_labels: [__meta_ec2_tag_Name]
-      #   regex: monitoring-test
-      #   action: keep
-
       - source_labels: [__meta_ec2_private_ip]
-        target_label: ip
-      - source_labels: [__meta_ec2_private_ip]
-        regex: (.+)
-        replacement: $1:9100
         target_label: __address__
+        replacement: $1:9100
 
-  # (2) nodeapp: 각 EC2의 8080 (/metrics)
-  - job_name: "nodeapp"
+      - source_labels: [__meta_ec2_instance_id]
+        target_label: instance
+
+  # -------------------------
+  # node app metrics (8080)
+  # -------------------------
+  - job_name: nodeapp
     metrics_path: /metrics
     ec2_sd_configs:
       - region: ap-northeast-2
         port: 8080
+        filters:
+          - name: instance-state-name
+            values: ["running"]
+
     relabel_configs:
-        - source_labels: [__meta_ec2_tag_aws_autoscaling_groupName]
-          regex: monitoring-dev-asg-app.*
-          action: keep
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: __address__
+        replacement: $1:8080
 
-
-
-        - source_labels: [__meta_ec2_private_ip]
-          regex: (.+)
-          replacement: $1:8080
-          target_label: __address__
+      - source_labels: [__meta_ec2_instance_id]
+        target_label: instance
