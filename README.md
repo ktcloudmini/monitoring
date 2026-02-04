@@ -40,6 +40,9 @@ It is verified on a single EC2 first, then extended to work with Auto Scaling Gr
 ### App metrics
 ```bash
 curl -s http://localhost:8080/metrics | grep http_requests_total | head
+
+---
+
 ## PromQL examples (per-instance)
 
 > 아래 쿼리는 node_exporter 기준이며, 인스턴스 필터는 필요할 때만 추가하세요.
