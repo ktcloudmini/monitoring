@@ -23,7 +23,7 @@ const httpRequestDurationSeconds = new client.Histogram({
 app.use((req, res, next) => {
   const end = httpRequestDurationSeconds.startTimer();
   res.on("finish", () => {
-    const route = req.route?.path || req.path || "unknown";
+    const route = req.route?.path ?? "other"; // 라벨 폭발 방지
     const labels = { method: req.method, route, status: String(res.statusCode) };
     httpRequestsTotal.inc(labels);
     end(labels);
@@ -43,7 +43,7 @@ app.get("/work", (req, res) => {
 
 app.get("/kill", (req, res) => {
   res.send("bye\n");
-  setTimeout(() => process.exit(1), 50);
+  setTimeout(() => process.exit(1), 300); // 기록 안정성
 });
 
 app.get("/metrics", async (req, res) => {
@@ -51,14 +51,10 @@ app.get("/metrics", async (req, res) => {
   res.end(await client.register.metrics());
 });
 
-/** ✅ 5xx 테스트 라우트: listen 위에 두기 */
+/**  5xx 테스트 라우트: listen 위에 두기 */
 app.get("/fail", (req, res) => {
   res.status(500).send("forced 500");
 });
 
-// 503 강제 발생(가끔 503이 더 보기 좋음)
-app.get("/unavailable", (req, res) => {
-  res.status(503).send("forced 503");
-});
 
 app.listen(PORT, "0.0.0.0", () => console.log(`listening on :${PORT}`));
