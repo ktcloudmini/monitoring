@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
   app:
+    profiles: ["app"]
     image: node:18
     container_name: app
     working_dir: /app
     volumes:
       - ./:/app
     command: node server.js
-
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -19,6 +19,7 @@ services:
         max-file: "3"
 
   prometheus:
+    profiles: ["monitoring"]
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
@@ -32,6 +33,7 @@ services:
     restart: unless-stopped
 
   node_exporter:
+    profiles: ["node"]
     image: prom/node-exporter:latest
     container_name: node_exporter
     pid: host
@@ -44,6 +46,7 @@ services:
     restart: unless-stopped
 
   grafana:
+    profiles: ["monitoring"]
     image: grafana/grafana:latest
     container_name: grafana
     environment:
