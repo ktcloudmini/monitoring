@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "A graph showing whether ALB traffic is distributed across ASG instances.",
       "fieldConfig": {
@@ -121,7 +121,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "Graph showing total RPS\n",
       "fieldConfig": {
@@ -216,7 +216,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "Graph showing whether target instance is up/down",
       "fieldConfig": {
@@ -282,7 +282,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "graph showing number of alive target",
       "fieldConfig": {
@@ -347,7 +347,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "graph Proving that instances have actually scaled out/in by “logarithmic change”",
       "fieldConfig": {
@@ -442,7 +442,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "graph showing Scaling load basis",
       "fieldConfig": {
@@ -537,7 +537,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "Graphs to support resource pressure/scaling rationale",
       "fieldConfig": {
@@ -632,7 +632,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "description": "Graph showing whether increasing traffic does not increase failures/errors",
       "fieldConfig": {
@@ -723,7 +723,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"5..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
@@ -740,7 +740,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -834,7 +834,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -892,7 +892,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "prometheus"
           },
           "editorMode": "code",
           "expr": "100 *\r\nsum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"5..\"}[$__range]))\r\n/\r\nclamp_min(\r\n  sum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"[45]..\"}[$__range])),\r\n  1\r\n)\r\n",
@@ -909,7 +909,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1003,7 +1003,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
