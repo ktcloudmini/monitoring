@@ -1,6 +1,0 @@
-- name: Install node_exporter on service/asg hosts
-  hosts: "tag_role_{{ target_role }}"
-  become: yes
-  roles:
-    - docker
-    - node_exporter

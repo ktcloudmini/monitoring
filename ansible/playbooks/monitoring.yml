@@ -1,6 +1,0 @@
-- name: Install monitoring stack on monitoring host
-  hosts: tag_role_monitoring
-  become: yes
-  roles:
-    - docker
-    - monitoring_stack
