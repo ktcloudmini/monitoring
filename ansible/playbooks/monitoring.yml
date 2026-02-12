@@ -1,0 +1,8 @@
+---
+- name: Provision monitoring (Prometheus + Grafana + dashboards)
+  hosts: role_monitoring
+  become: true
+
+  roles:
+    - docker
+    - monitoring_stack

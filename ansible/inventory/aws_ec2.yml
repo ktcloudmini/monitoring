@@ -1,0 +1,20 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - ap-northeast-2
+
+# 태그 role 기준으로 그룹 생성
+keyed_groups:
+  - key: tags.role
+    prefix: role
+    separator: "_"
+
+# 기본 필터(원하면 VPC/태그 추가)
+filters:
+  instance-state-name: running
+
+hostnames:
+  - private-ip-address
+
+compose:
+  ansible_host: private_ip_address
+  ansible_user: "'ubuntu'"
