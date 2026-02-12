@@ -1,10 +1,6 @@
----
-- name: Provision services/asg (node exporter + app)
-  hosts: "role_{{ target_role | default('service') }}"
-  become: true
-
+- name: Install node_exporter on service/asg hosts
+  hosts: "tag_role_{{ target_role }}"
+  become: yes
   roles:
     - docker
     - node_exporter
-    # 앱도 같이 올릴 거면 아래 role 하나 더(선택)
-    # - app_stack

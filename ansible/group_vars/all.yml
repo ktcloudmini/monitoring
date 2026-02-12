@@ -1,15 +1,11 @@
----
-project_dir: /home/ubuntu/monitoring
+repo_url: "https://github.com/ktcloudmini/monitoring.git"
+app_dir: "/home/ubuntu/monitoring"
 
-# docker compose 실행에 사용할 프로젝트 경로(레포가 /opt/monitoring 에 클론되니 심볼릭으로 맞추거나)
-repo_dir: /opt/monitoring
+# 각 role별로 올릴 compose profile
+compose_profiles:
+  monitoring: ["monitoring"]
+  service: ["app", "node"]
+  asg: ["app", "node"]
 
-# node exporter
-node_exporter_port: 9100
-
-# app
-app_port: 8080
-
-# monitoring
-grafana_port: 3000
-prometheus_port: 9090
+# docker compose project name (충돌 방지용)
+compose_project: "monitoring"

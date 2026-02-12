@@ -1,19 +1,31 @@
----
-- name: Install docker
-  apt:
-    name: docker.io
-    state: present
+- name: Install packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - git
+      - apt-transport-https
+      - gnupg
+      - lsb-release
     update_cache: true
 
-- name: Enable and start docker
-  systemd:
+- name: Install docker.io
+  become: true
+  ansible.builtin.apt:
+    name: docker.io
+    state: present
+
+- name: Enable docker
+  become: true
+  ansible.builtin.systemd:
     name: docker
     enabled: true
     state: started
 
-- name: Add ubuntu user to docker group
-  user:
+- name: Add ubuntu to docker group
+  become: true
+  ansible.builtin.user:
     name: ubuntu
     groups: docker
     append: true
-  ignore_errors: true

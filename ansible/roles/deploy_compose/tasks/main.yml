@@ -1,0 +1,37 @@
+- name: Ensure app dir parent
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0755"
+
+# 방법 A: 토큰 없이 public repo면 그냥 git 모듈로 끝
+- name: Clone or update repo (public repo)
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_dir }}"
+    version: main
+    update: yes
+  when: github_pat is not defined
+
+# 방법 B: private repo면 PAT로 clone (토큰 흔적 제거까지)
+- name: Clone repo with PAT using extraHeader (no token in origin)
+  ansible.builtin.shell: |
+    set -euo pipefail
+    AUTH="$(printf "x-access-token:%s" "{{ github_pat }}" | base64 -w0)"
+    rm -rf "{{ app_dir }}"
+    git -c http.extraHeader="Authorization: Basic ${AUTH}" clone "{{ repo_url }}" "{{ app_dir }}"
+    cd "{{ app_dir }}"
+    git remote set-url origin "{{ repo_url }}"
+  args:
+    executable: /bin/bash
+  when: github_pat is defined
+
+- name: Docker compose up with profiles
+  ansible.builtin.shell: |
+    set -euo pipefail
+    cd "{{ app_dir }}"
+    docker compose -p "{{ compose_project }}" {% for p in target_profiles %} --profile {{ p }}{% endfor %} up -d --build
+  args:
+    executable: /bin/bash

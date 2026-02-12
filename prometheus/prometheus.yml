@@ -1,63 +1,45 @@
 global:
-  scrape_interval: 30s
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: prometheus
-    static_configs:
-      - targets: ["prometheus:9090"]
-
-  # -------------------------
-  # node_exporter (CPU/MEM)
-  # -------------------------
+  # (1) Node Exporter (9100): service + asg
   - job_name: node
     ec2_sd_configs:
       - region: ap-northeast-2
         port: 9100
         filters:
+          - name: tag:role
+            values: ["asg", "service"]
           - name: instance-state-name
             values: ["running"]
-
     relabel_configs:
-      - source_labels: [__meta_ec2_private_ip]
-        target_label: __address__
-        replacement: $1:9100
-
-      - source_labels: [__meta_ec2_instance_id]
-        target_label: instance
-
-      #  EC2 tag role -> Prometheus label role
       - source_labels: [__meta_ec2_tag_role]
         target_label: role
-
-      # (선택) Name 태그도 라벨로 가져오면 Grafana에서 보기 편함
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: private_ip
+      - source_labels: [__meta_ec2_instance_id]
+        target_label: instance_id
       - source_labels: [__meta_ec2_tag_Name]
         target_label: name
 
-
-  # -------------------------
-  # node app metrics (8080)
-  # -------------------------
+  # (2) Node App metrics (8080): service + asg
   - job_name: nodeapp
     metrics_path: /metrics
     ec2_sd_configs:
       - region: ap-northeast-2
         port: 8080
         filters:
+          - name: tag:role
+            values: ["asg", "service"]
           - name: instance-state-name
             values: ["running"]
-
     relabel_configs:
-      - source_labels: [__meta_ec2_private_ip]
-        target_label: __address__
-        replacement: $1:8080
-
-      - source_labels: [__meta_ec2_instance_id]
-        target_label: instance
-
-      #  EC2 tag role -> Prometheus label role
       - source_labels: [__meta_ec2_tag_role]
         target_label: role
-
-      # (선택) Name 태그도 라벨로
+      - source_labels: [__meta_ec2_private_ip]
+        target_label: private_ip
+      - source_labels: [__meta_ec2_instance_id]
+        target_label: instance_id
       - source_labels: [__meta_ec2_tag_Name]
         target_label: name

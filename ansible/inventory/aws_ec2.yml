@@ -2,19 +2,13 @@ plugin: amazon.aws.aws_ec2
 regions:
   - ap-northeast-2
 
-# 태그 role 기준으로 그룹 생성
+filters:
+  "tag:Project": "monitoring"   # 너 프로젝트 태그에 맞춰 변경
+  "instance-state-name": "running"
+
 keyed_groups:
   - key: tags.role
     prefix: role
-    separator: "_"
-
-# 기본 필터(원하면 VPC/태그 추가)
-filters:
-  instance-state-name: running
-
-hostnames:
-  - private-ip-address
 
 compose:
-  ansible_host: private_ip_address
-  ansible_user: "'ubuntu'"
+  ansible_host: public_ip_address
