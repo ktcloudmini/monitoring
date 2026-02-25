@@ -1,0 +1,16 @@
+# Common paths
+app_dir: /home/ubuntu/appstack
+monitoring_dir: /home/ubuntu/monitoring
+
+# Docker compose profiles per host group will be set inside playbooks.
+# Default ports
+app_port: 8080
+node_exporter_port: 9100
+prometheus_port: 9090
+grafana_port: 3000
+
+# Prometheus target selection:
+#   static: Ansible renders targets from inventory (no AWS IAM needed)
+#   ec2:    Prometheus EC2 service discovery (needs ec2:DescribeInstances on monitoring EC2)
+prometheus_sd_mode: static
+aws_region: ap-northeast-2

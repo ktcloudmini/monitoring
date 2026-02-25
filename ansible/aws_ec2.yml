@@ -1,0 +1,15 @@
+plugin: aws_ec2
+regions:
+  - ap-northeast-2
+
+filters:
+  instance-state-name: [running]
+
+keyed_groups:
+  - key: tags.role
+    separator: ""
+
+# If you run Ansible from the monitoring EC2 inside the VPC, private IP is best.
+# If you run Ansible from your laptop, change to: public-ip-address
+hostnames:
+  - private-ip-address

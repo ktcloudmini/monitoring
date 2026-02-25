@@ -1,0 +1,43 @@
+---
+- name: Ensure stack dir exists
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+# Copy only what we need (compose + app + monitoring configs)
+- name: Copy stack files
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../"
+    dest: "{{ app_dir }}/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  vars:
+    copy_excludes:
+      - ".git"
+  # NOTE: copy module doesn't support excludes directly; keep repo small (no node_modules).
+  # If your repo has big folders, delete them before running ansible.
+
+- name: Convert profiles csv to flags
+  ansible.builtin.set_fact:
+    compose_profile_flags: "{{ (compose_profiles_csv.split(',') | map('trim') | list) | map('regex_replace','^(.*)$','--profile \\1') | join(' ') }}"
+
+- name: Pull images (if any)
+  ansible.builtin.command: "docker compose {{ compose_profile_flags }} pull"
+  args:
+    chdir: "{{ app_dir }}"
+  register: pull_out
+  changed_when: "'Downloading' in pull_out.stdout or 'Pulling' in pull_out.stdout"
+
+- name: Build app image when app profile is enabled
+  ansible.builtin.command: "docker compose --profile app build"
+  args:
+    chdir: "{{ app_dir }}"
+  when: "'app' in compose_profiles_csv"
+
+- name: Up services
+  ansible.builtin.command: "docker compose {{ compose_profile_flags }} up -d"
+  args:
+    chdir: "{{ app_dir }}"

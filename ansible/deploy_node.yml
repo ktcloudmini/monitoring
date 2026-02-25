@@ -1,0 +1,9 @@
+---
+- name: Deploy app + node_exporter on service and asg instances
+  hosts: service:asg
+  become: true
+  roles:
+    - common
+    - deploy_stack
+  vars:
+    compose_profiles_csv: "node"

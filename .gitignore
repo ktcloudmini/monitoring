@@ -1,2 +1,14 @@
 .env
 *.log
+node_modules/
+npm-debug.log*
+.DS_Store
+
+# Grafana/Prometheus data (로컬/도커 볼륨 성격이면)
+prometheus_data/
+grafana_data/
+
+# Ansible/terraform 등 쓰면
+*.retry
+.terraform/
+terraform.tfstate*

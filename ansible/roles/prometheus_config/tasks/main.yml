@@ -1,0 +1,26 @@
+---
+- name: Ensure prometheus dir exists
+  ansible.builtin.file:
+    path: "{{ app_dir }}/monitoring/prometheus"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Render prometheus.yml (static targets)
+  ansible.builtin.template:
+    src: prometheus.static.yml.j2
+    dest: "{{ app_dir }}/monitoring/prometheus/prometheus.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: prometheus_sd_mode == 'static'
+
+- name: Render prometheus.yml (ec2 service discovery)
+  ansible.builtin.template:
+    src: prometheus.ec2.yml.j2
+    dest: "{{ app_dir }}/monitoring/prometheus/prometheus.yml"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: prometheus_sd_mode == 'ec2'

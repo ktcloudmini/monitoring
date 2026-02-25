@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "node"
+    ec2_sd_configs:
+      - region: "{{ aws_region }}"
+        port: {{ node_exporter_port }}
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Role]
+        regex: (service|asg)
+        action: keep
+
+  - job_name: "app"
+    metrics_path: /metrics
+    ec2_sd_configs:
+      - region: "{{ aws_region }}"
+        port: {{ app_port }}
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Role]
+        regex: (service|asg)
+        action: keep

@@ -107,12 +107,12 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "sum by (instance, role) (\r\n  rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])\r\n)\r\n",
-          "format": "time_series",
-          "legendFormat": "{{role}} - {{instance}}",
-          "range": true,
-          "refId": "A"
+            "editorMode": "code",
+            "expr": "sum by (instance, role) (\r\n  rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])\r\n)\r\n",
+            "format": "time_series",
+            "legendFormat": "{{role}} - {{instance}}",
+            "range": true,
+            "refId": "A"
         }
       ],
       "title": "1.1.RPS by Target Instances",
@@ -204,7 +204,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(\r\n  rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])\r\n)\r\n",
+          "expr": "sum(\r\n  rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])\r\n)\r\n",
           "legendFormat": "RPS",
           "range": true,
           "refId": "A"
@@ -525,7 +525,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * (1 - avg by (instance, role) (\r\n  rate(node_cpu_seconds_total{job=\"node\", mode=\"idle\", role=~\"main|asg\"}[5m])\r\n))\r\n",
+          "expr": "100 * (1 - avg by (instance, role) (\r\n  rate(node_cpu_seconds_total{job=\"node\", mode=\"idle\", role=~\"service|asg\"}[5m])\r\n))\r\n",
           "legendFormat": "{{role}} - {{instance}}",
           "range": true,
           "refId": "A"
@@ -620,7 +620,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{job=\"node\", role=~\"asg|main\"} / node_memory_MemTotal_bytes{job=\"node\", role=~\"asg|main\"}))\r\n",
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{job=\"node\", role=~\"asg|service\"} / node_memory_MemTotal_bytes{job=\"node\", role=~\"asg|service\"}))\r\n",
           "legendFormat": "{{role}} - {{instance}}",
           "range": true,
           "refId": "A"
@@ -715,7 +715,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"4..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
+          "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"4..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
           "legendFormat": "4xx",
           "range": true,
           "refId": "A"
@@ -726,7 +726,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"5..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
+          "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"5..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
           "hide": false,
           "instant": false,
           "legendFormat": "5xx",
@@ -821,11 +821,11 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"[23]..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
-          "legendFormat": "success",
-          "range": true,
-          "refId": "A"
+            "editorMode": "code",
+            "expr": "100 *\r\nsum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"[23]..\"}[$__rate_interval]))\r\n/\r\nclamp_min(\r\n  sum(rate(http_requests_total{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])),\r\n  0.001\r\n)\r\n",
+            "legendFormat": "success",
+            "range": true,
+            "refId": "A"
         }
       ],
       "title": "4.2.Success rate(2xx/3xx) (%)",
@@ -883,24 +883,24 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "100 *\r\nsum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"4..\"}[$__range]))\r\n/\r\nclamp_min(\r\n  sum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"[45]..\"}[$__range])),\r\n  1\r\n)\r\n",
-          "legendFormat": "4xx",
-          "range": true,
-          "refId": "A"
+            "editorMode": "code",
+            "expr": "100 *\r\nsum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"4..\"}[$__range]))\r\n/\r\nclamp_min(\r\n  sum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"[45]..\"}[$__range])),\r\n  1\r\n)\r\n",
+            "legendFormat": "4xx",
+            "range": true,
+            "refId": "A"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "100 *\r\nsum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"5..\"}[$__range]))\r\n/\r\nclamp_min(\r\n  sum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|main\", status=~\"[45]..\"}[$__range])),\r\n  1\r\n)\r\n",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "5xx",
-          "range": true,
-          "refId": "B"
+            "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+            },
+            "editorMode": "code",
+            "expr": "100 *\r\nsum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"5..\"}[$__range]))\r\n/\r\nclamp_min(\r\n  sum(increase(http_requests_total{job=\"nodeapp\", role=~\"asg|service\", status=~\"[45]..\"}[$__range])),\r\n  1\r\n)\r\n",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "5xx",
+            "range": true,
+            "refId": "B"
         }
       ],
       "title": "4-3. Error Composition (4xx vs 5xx) (%)",
@@ -990,11 +990,11 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(\r\n  0.95,\r\n  sum by (le, route) (\r\n    rate(http_request_duration_seconds_bucket{\r\n      job=\"nodeapp\",\r\n      role=~\"asg|main\",\r\n      route=~\"^(/|/health|/work|/kill|/fail|/unavailable|/metrics)$\"\r\n    }[$__rate_interval])\r\n  )\r\n)\r\n",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
+            "editorMode": "code",
+            "expr": "histogram_quantile(\r\n  0.95,\r\n  sum by (le, route) (\r\n    rate(http_request_duration_seconds_bucket{\r\n      job=\"nodeapp\",\r\n      role=~\"asg|service\",\r\n      route=~\"^(/|/health|/work|/kill|/fail|/unavailable|/metrics)$\"\r\n    }[$__rate_interval])\r\n  )\r\n)\r\n",
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
         }
       ],
       "title": "5.1.Response time p95 (total/route)",
@@ -1084,11 +1084,11 @@
       "pluginVersion": "12.3.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(\r\n  0.95,\r\n  sum by (le, instance, role) (\r\n    rate(http_request_duration_seconds_bucket{job=\"nodeapp\", role=~\"asg|main\"}[$__rate_interval])\r\n  )\r\n)\r\n",
-          "legendFormat": "{{role}} - {{instance}}",
-          "range": true,
-          "refId": "A"
+            "editorMode": "code",
+            "expr": "histogram_quantile(\r\n  0.95,\r\n  sum by (le, instance, role) (\r\n    rate(http_request_duration_seconds_bucket{job=\"nodeapp\", role=~\"asg|service\"}[$__rate_interval])\r\n  )\r\n)\r\n",
+            "legendFormat": "{{role}} - {{instance}}",
+            "range": true,
+            "refId": "A"
         }
       ],
       "title": "5.2.Response time p95(instance)",
