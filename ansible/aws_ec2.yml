@@ -6,7 +6,7 @@ filters:
   instance-state-name: [running]
 
 keyed_groups:
-  - key: tags.role
+  - key: tags.Role
     separator: ""
 
 # If you run Ansible from the monitoring EC2 inside the VPC, private IP is best.
