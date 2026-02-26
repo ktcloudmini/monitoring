@@ -1,4 +1,9 @@
 ---
+# roles/common/tasks/main.yml
+# Ubuntu 22.04 (jammy) 기준: Docker 공식 repo 설치 + compose plugin(v2)
+# - docker.io (Ubuntu 기본 패키지) 사용하지 않음 (충돌 방지)
+# - 이미 Docker CE가 설치되어 있어도 idempotent 하게 동작
+
 - name: Apt update
   ansible.builtin.apt:
     update_cache: true
@@ -10,10 +15,57 @@
       - ca-certificates
       - curl
       - git
-      - docker.io
-      - docker-compose-plugin
+      - gnupg
+      - lsb-release
       - python3-pip
     state: present
+
+# ---- Docker official repository setup ----
+- name: Ensure /etc/apt/keyrings exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Add Docker GPG key
+  ansible.builtin.shell: |
+    set -e
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+  args:
+    creates: /etc/apt/keyrings/docker.gpg
+
+- name: Add Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ ansible_architecture | replace('x86_64','amd64') }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    filename: docker
+    state: present
+    update_cache: true
+
+# ---- Remove Ubuntu docker.io stack if present (avoid conflicts) ----
+- name: Remove Ubuntu docker.io packages if installed (avoid conflicts)
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose
+      - docker-compose-v2
+      - containerd
+      - runc
+    state: absent
+    purge: true
+  ignore_errors: true
+
+# ---- Install Docker Engine from Docker repo ----
+- name: Install Docker Engine + compose plugin
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
 
 - name: Enable and start docker
   ansible.builtin.systemd:
@@ -21,8 +73,20 @@
     enabled: true
     state: started
 
-- name: Add ubuntu to docker group
+- name: Add user to docker group
   ansible.builtin.user:
     name: "{{ ansible_user | default('ubuntu') }}"
     groups: docker
     append: true
+
+- name: Verify docker and compose (informational)
+  ansible.builtin.shell: |
+    set -e
+    docker --version
+    docker compose version
+  register: docker_versions
+  changed_when: false
+
+- name: Show docker versions
+  ansible.builtin.debug:
+    var: docker_versions.stdout_lines
