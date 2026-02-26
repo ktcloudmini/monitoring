@@ -12,8 +12,7 @@ scrape_configs:
   - job_name: "node"
     static_configs:
       - targets:
-{% set service_hosts = groups['service'] | default([]) %}
 {% set asg_hosts = groups['asg'] | default([]) %}
-{% for h in (service_hosts + asg_hosts) | unique %}
+{% for h in asg_hosts | unique %}
           - "{{ (hostvars[h].ansible_host | default(h)) }}:9100"
 {% endfor %}

@@ -1,26 +1,29 @@
 ---
-- name: Ensure prometheus dir exists
+- name: Choose prometheus config template (static/ec2)
+  ansible.builtin.set_fact:
+    prometheus_template: >-
+      {{ 'prometheus.ec2.yml.j2' if prometheus_sd_mode | default('static') == 'ec2'
+         else 'prometheus.static.yml.j2' }}
+
+- name: Ensure prometheus config dir exists
   ansible.builtin.file:
-    path: "{{ app_dir }}/monitoring/prometheus"
+    path: "{{ app_dir }}/prometheus"
     state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user | default('ubuntu') }}"
+    group: "{{ ansible_user | default('ubuntu') }}"
     mode: "0755"
 
-- name: Render prometheus.yml (static targets)
+- name: Render prometheus.yml
   ansible.builtin.template:
-    src: prometheus.static.yml.j2
-    dest: "{{ app_dir }}/monitoring/prometheus/prometheus.yml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    src: "{{ prometheus_template }}"
+    dest: "{{ app_dir }}/prometheus/prometheus.yml"
+    owner: "{{ ansible_user | default('ubuntu') }}"
+    group: "{{ ansible_user | default('ubuntu') }}"
     mode: "0644"
-  when: prometheus_sd_mode == 'static'
+  register: prom_cfg
 
-- name: Render prometheus.yml (ec2 service discovery)
-  ansible.builtin.template:
-    src: prometheus.ec2.yml.j2
-    dest: "{{ app_dir }}/monitoring/prometheus/prometheus.yml"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: "0644"
-  when: prometheus_sd_mode == 'ec2'
+- name: Restart prometheus container if config changed
+  ansible.builtin.command: docker compose --profile monitoring restart prometheus
+  args:
+    chdir: "{{ app_dir }}"
+  when: prom_cfg.changed

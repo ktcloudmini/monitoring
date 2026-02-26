@@ -1,6 +1,6 @@
 ---
 - name: Deploy app + node_exporter on service and asg instances
-  hosts: service:asg
+  hosts: asg
   become: true
   roles:
     - common

@@ -16,8 +16,8 @@ scrape_configs:
         filters:
           - name: instance-state-name
             values: ["running"]
-          - name: "tag:role"
-            values: ["monitoring", "service", "asg"]
+          - name: "tag:Role"
+            values: ["monitoring", "asg"]
 
     relabel_configs:
       - source_labels: [__meta_ec2_private_ip]
@@ -47,8 +47,8 @@ scrape_configs:
         filters:
           - name: instance-state-name
             values: ["running"]
-          - name: "tag:role"
-            values: ["service", "asg"]
+          - name: "tag:Role"
+            values: ["asg"]
 
     relabel_configs:
       - source_labels: [__meta_ec2_private_ip]
