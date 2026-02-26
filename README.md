@@ -33,7 +33,7 @@ AWS EC2 + ASG 환경에서 **Prometheus + Grafana 기반 모니터링 스택**�
 
 ## Tag / Label Convention (중요)
 
-EC2 태그 Key는 **소문자 `role`** 로 통일합니다.
+EC2 태그 Key는 **대소문자 `role or Role`** 로 통일합니다.
 
 예시:
 - `role=monitoring`  (Prometheus/Grafana가 있는 서버)
