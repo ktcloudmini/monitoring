@@ -1,5 +1,5 @@
 ---
-- name: Deploy app + node_exporter on service and asg instances
+- name: Deploy app + node_exporter on asg instances
   hosts: asg
   become: true
   roles:

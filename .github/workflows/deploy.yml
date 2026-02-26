@@ -39,7 +39,7 @@ jobs:
           echo "TARGET=$TARGET" | tee -a "$GITHUB_ENV"
 
       # node/site일 때만 SSH 키 생성 (monitoring은 local이라 불필요)
-      - name: Write SSH key (for service/asg)
+      - name: Write SSH key (for ASG / remote hosts)
         if: ${{ env.TARGET != 'monitoring' }}
         shell: bash
         run: |
