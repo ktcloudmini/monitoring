@@ -1,2 +1,3 @@
+ansible_connection: local
 prometheus_sd_mode: static
 aws_region: ap-northeast-2
