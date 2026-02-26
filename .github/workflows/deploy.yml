@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: [ self-hosted, vpc, deploy ]
+    runs-on: [ self-hosted, monitoring ]
 
     steps:
       - uses: actions/checkout@v4
