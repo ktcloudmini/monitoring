@@ -2,16 +2,9 @@ name: "Monitoring Deploy (Ansible on VPC Runner)"
 
 on:
 #  push:
- #   branches: [ "main" ]
+#    branches: [ "main" ]
 
   workflow_dispatch:
-    inputs:
-      target:
-        description: "deploy target"
-        required: true
-        default: "site"
-        type: choice
-        options: [ site, monitoring, node ]
 
 permissions:
   contents: read
@@ -30,29 +23,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ansible python3-boto3 python3-botocore
 
-      - name: Determine target
-        shell: bash
-        run: |
-          set -euo pipefail
-          TARGET="${{ github.event.inputs.target }}"
-          if [ -z "${TARGET:-}" ]; then TARGET="site"; fi
-          echo "TARGET=$TARGET" | tee -a "$GITHUB_ENV"
-
-      # node/site일 때만 SSH 키 생성 (monitoring은 local이라 불필요)
-      - name: Write SSH key (for ASG / remote hosts)
-        if: ${{ env.TARGET != 'monitoring' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "${{ secrets.AWS_SSH_KEY_B64 }}" ]; then
-            echo "ERROR: Missing secret AWS_SSH_KEY_B64" >&2
-            exit 1
-          fi
-
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SSH_KEY_B64 }}" | base64 -d > ~/.ssh/deploy.pem
-          chmod 600 ~/.ssh/deploy.pem
-
       - name: Inventory check
         shell: bash
         run: |
@@ -60,20 +30,9 @@ jobs:
           cd ansible
           ansible-inventory -i aws_ec2.yml --graph | head -n 200
 
-      - name: Deploy
+      - name: Deploy monitoring
         shell: bash
         run: |
           set -euo pipefail
           cd ansible
-
-          if [ "$TARGET" = "monitoring" ]; then
-            ansible-playbook -i aws_ec2.yml deploy_monitoring.yml
-
-          elif [ "$TARGET" = "node" ]; then
-            ansible-playbook -i aws_ec2.yml deploy_node.yml \
-              --private-key ~/.ssh/deploy.pem -u ubuntu
-
-          else
-            ansible-playbook -i aws_ec2.yml deploy_site.yml \
-              --private-key ~/.ssh/deploy.pem -u ubuntu
-          fi
+          ansible-playbook -i aws_ec2.yml deploy_monitoring.yml
