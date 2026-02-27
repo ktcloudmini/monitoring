@@ -2,8 +2,6 @@
 - name: Deploy Prometheus + Grafana on monitoring instance
   hosts: monitoring
   become: true
-  become_method: sudo
-  become_flags: "-n"
   roles:
     - common
     - deploy_stack
